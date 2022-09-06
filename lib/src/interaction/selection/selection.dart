@@ -19,6 +19,8 @@ import 'package:graphic/src/util/collection.dart';
 import 'interval.dart';
 import 'point.dart';
 
+typedef OnSelectionCallback = void Function();
+
 /// The specification of a selection.
 ///
 /// A selection is a data query driven by [Gesture]s. When a selection is triggered,
@@ -40,6 +42,7 @@ abstract class Selection {
     this.clear,
     this.devices,
     this.layer,
+    this.selectionCallback,
   });
 
   /// Which diemsion of data values will be tested.
@@ -79,6 +82,9 @@ abstract class Selection {
   /// If null, a default 0 is set.
   int? layer;
 
+  /// To allow more interaction, if not null will be called at the end of [Selector.select]
+  OnSelectionCallback? selectionCallback;
+
   @override
   bool operator ==(Object other) =>
       other is Selection &&
@@ -114,6 +120,7 @@ abstract class Selector {
     this.dim,
     this.variable,
     this.points,
+    this.selectionCallback,
   );
 
   /// Which diemsion of data values will be tested.
@@ -125,6 +132,8 @@ abstract class Selector {
 
   /// The canvas points indicating the position of this selector.
   final List<Offset> points;
+
+  final OnSelectionCallback? selectionCallback;
 
   /// Gets the selected tuple indexes.
   Set<int>? select(
@@ -150,6 +159,8 @@ class SelectorOp extends Operator<Map<String, Selector>?> {
     final onTypes = params['onTypes'] as Map<GestureType, List<String>>;
     final clearTypes = params['clearTypes'] as Set<GestureType>;
     final gesture = params['gesture'] as Gesture?;
+    final selectionCallback =
+        params["selectionCallback"] as OnSelectionCallback?;
 
     if (gesture == null) {
       return value;
@@ -178,6 +189,7 @@ class SelectorOp extends Operator<Map<String, Selector>?> {
           spec.dim,
           spec.variable,
           [gesture.localPosition],
+          selectionCallback,
         );
       } else {
         spec as IntervalSelection;
@@ -249,6 +261,7 @@ class SelectorOp extends Operator<Map<String, Selector>?> {
           spec.dim,
           spec.variable,
           points,
+          selectionCallback,
         );
       }
     }

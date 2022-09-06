@@ -20,6 +20,7 @@ class PointSelection extends Selection {
     Set<GestureType>? clear,
     Set<PointerDeviceKind>? devices,
     int? layer,
+    OnSelectionCallback? selectionCallback,
   }) : super(
           dim: dim,
           variable: variable,
@@ -27,6 +28,7 @@ class PointSelection extends Selection {
           clear: clear,
           devices: devices,
           layer: layer,
+          selectionCallback: selectionCallback,
         );
 
   /// Whether triggered tuples should be toggled (inserted or removed from) or replace
@@ -66,11 +68,13 @@ class PointSelector extends Selector {
     Dim? dim,
     String? variable,
     List<Offset> points,
+    OnSelectionCallback? selectionCallback,
   )   : assert(toggle != true || variable == null),
         super(
           dim,
           variable,
           points,
+          selectionCallback,
         );
 
   final bool toggle;
@@ -138,6 +142,7 @@ class PointSelector extends Selector {
           rst.add(i);
         }
       }
+      selectionCallback?.call();
       return rst.isEmpty ? null : rst;
     }
 

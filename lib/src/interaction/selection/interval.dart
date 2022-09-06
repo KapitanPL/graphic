@@ -48,10 +48,12 @@ class IntervalSelector extends Selector {
     Dim? dim,
     String? variable,
     List<Offset> points,
+    OnSelectionCallback? selectionCallback,
   ) : super(
           dim,
           variable,
           points,
+          selectionCallback,
         );
 
   /// The color of the interval mark.
